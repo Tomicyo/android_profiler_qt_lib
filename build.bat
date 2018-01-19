@@ -1,1 +1,1 @@
-cmake -G"Visual Studio 15 2017 Win64" -H. -Bbuild -DgRPC_ZLIB_PROVIDER=kaleido3d -DgRPC_SSL_PROVIDER=kaleido3d -DgRPC_BUILD_TESTS=OFF
+cmake -G"Visual Studio 15 2017 Win64" -H. -Bbuild -DgRPC_ZLIB_PROVIDER=kaleido3d -DgRPC_SSL_PROVIDER=kaleido3d -DgRPC_BUILD_TESTS=OFF -DBENCHMARK_ENABLE_TESTING=OFF

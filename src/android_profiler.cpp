@@ -17,37 +17,59 @@ namespace android
     {
         using namespace ::grpc;
         
-        class ClientImpl
+        class PerfDClientImpl
         {
         public:
-            ClientImpl(std::shared_ptr<Channel> channel)
-                : m_ProfSrv(std::make_unique<CProfilerService>(channel))
-                , m_CpuSrv(std::make_unique<CCpuService>(channel))
-            {
-                m_CpuSrv->GetThreads(10151);
-                m_ProfSrv->GetVersion();
-            }
-            ~ClientImpl()
+            PerfDClientImpl(std::shared_ptr<Channel> channel)
+                : m_Channel(channel)
             {
             }
-
+            ~PerfDClientImpl()
+            {
+            }
+            std::shared_ptr<Channel> channel() const
+            {
+                return m_Channel;
+            }
         private:
-            std::unique_ptr<CProfilerService>   m_ProfSrv;
-            std::unique_ptr<CCpuService>        m_CpuSrv;
+            std::shared_ptr<Channel> m_Channel;
+
         };
 
-        Client::Client(const char* ServerAddress)
-            : d(new ClientImpl(grpc::CreateChannel(ServerAddress,
+        PerfDClient::PerfDClient(const char* ServerAddress)
+            : d(new PerfDClientImpl(grpc::CreateChannel(ServerAddress,
                 grpc::InsecureChannelCredentials())))
         {
             
         }
-        Client::~Client()
+        PerfDClient::~PerfDClient()
         {
             if (d)
             {
                 delete d;
             }
+        }
+
+        GpuService::~GpuService()
+        {
+
+        }
+
+        CpuService::CpuService(PerfDClientImpl* pd)
+        {
+            d = new CpuServiceImpl(pd->channel());
+        }
+
+        CpuService::~CpuService()
+        {
+            if (d)
+            {
+                delete d;
+            }
+        }
+        void CpuService::GetThreads(int pid, std::vector<ThreadInfo>& infos)
+        {
+            d->GetThreads(pid, infos);
         }
     }
 }

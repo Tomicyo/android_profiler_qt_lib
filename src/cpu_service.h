@@ -1,5 +1,6 @@
 #pragma once
 
+#include "android_profiler.h"
 #include <grpc/grpc.h>
 #include <grpc++/channel.h>
 #include <grpc++/client_context.h>
@@ -60,17 +61,17 @@ namespace android
         using namespace ::grpc;
 
         // android o supports
-        class CCpuService
+        class CpuServiceImpl
         {
         public:
-            CCpuService(std::shared_ptr<Channel> channel);
-            ~CCpuService();
+            CpuServiceImpl(std::shared_ptr<Channel> channel);
+            ~CpuServiceImpl();
 
             void GetData();
-            void GetThreads(int processId);
+            void GetThreads(int processId, std::vector<ThreadInfo>& infos);
 
         private:
-            std::unique_ptr< CpuService::Stub > m_Stub;
+            std::unique_ptr< ::profiler::proto::CpuService::Stub > m_Stub;
         };
 
     }

@@ -4,16 +4,16 @@ namespace android
 {
 namespace profiler
 {
-    CCpuService::CCpuService(std::shared_ptr<Channel> channel)
+    CpuServiceImpl::CpuServiceImpl(std::shared_ptr<Channel> channel)
         : m_Stub(CpuService::NewStub(channel))
     {
     }
 
-    CCpuService::~CCpuService()
+    CpuServiceImpl::~CpuServiceImpl()
     {
     }
 
-    void CCpuService::GetData()
+    void CpuServiceImpl::GetData()
     {
         ClientContext context;
         CpuDataRequest request;
@@ -23,15 +23,18 @@ namespace profiler
 
     }
 
-    void CCpuService::GetThreads(int processId)
+    void CpuServiceImpl::GetThreads(int processId, std::vector<ThreadInfo>& infos)
     {
         ClientContext context;
         GetThreadsRequest request;
         request.set_process_id(processId);
         GetThreadsResponse response;
         Status status = m_Stub->GetThreads(&context, request, &response);
-        auto thrs = response.threads().size();
-        //thrs.data();
+        for (const GetThreadsResponse_Thread& thr : response.threads())
+        {
+            ThreadInfo info{std::move(thr.name()), thr.tid()};
+            infos.push_back(std::move(info));
+        }
     }
 
 }

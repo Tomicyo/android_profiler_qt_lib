@@ -23,7 +23,14 @@ namespace android
             ClientContext context;
             request.set_allocated_session(nullptr);
             Status status = m_Stub->GetVersion(&context, request, &response);
-            version = std::move(response.version());
+            if (status.ok())
+            {
+                version = std::move(response.version());
+            }
+            else
+            {
+                std::cerr << status.error_message() << std::endl;
+            }
         }
         void ProfilerServiceImpl::GetDevices(std::vector<DeviceInfo>& devices)
         {
@@ -31,16 +38,23 @@ namespace android
             GetDevicesResponse response;
             ClientContext context;
             Status status = m_Stub->GetDevices(&context, request, &response);
-            for (const auto&device : response.device())
+            if (status.ok())
             {
-                DeviceInfo info = { 
-                    std::move(device.manufacturer()),
-                    std::move(device.model()),
-                    std::move(device.serial()),
-                    std::move(device.version()),
-                    (DeviceState)device.state()
-                };
-                devices.push_back(std::move(info));
+                for (const auto&device : response.device())
+                {
+                    DeviceInfo info = {
+                        std::move(device.manufacturer()),
+                        std::move(device.model()),
+                        std::move(device.serial()),
+                        std::move(device.version()),
+                        (DeviceState)device.state()
+                    };
+                    devices.push_back(std::move(info));
+                }
+            }
+            else
+            {
+                std::cerr << status.error_message() << std::endl;
             }
         }
     }

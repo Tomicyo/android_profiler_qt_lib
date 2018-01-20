@@ -3,37 +3,32 @@
 #pragma once
 
 #if _WIN32 || _MSC_VER
-#if defined(LIB_BUILD)
+//#if defined(LIB_BUILD)
 #if defined(BUILD_SHARED_LIB)
 #define ANDROPROF_API __declspec(dllexport)
 #else
 #define ANDROPROF_API __declspec(dllimport)
 #endif
+//#else
+//#define ANDROPROF_API     
+//#endif
 #else
-#define ANDROPROF_API     
-#endif
-#else
-#define NGFX_API __attribute__((visibility("default"))) 
+#define ANDROPROF_API __attribute__((visibility("default"))) 
 #endif
 
 #include <string>
+#include <memory>
 #include <vector>
 
 namespace android
 {
-    // Need Kaleido3D Core ?....
     namespace profiler
     {
         class PerfDClientImpl;
         class ProfilerServiceImpl;
         class CpuServiceImpl;
         class MemoryServiceImpl;
-        class GpuServiceImpl;
-
-        class ANDROPROF_API ProfilerService
-        {
-
-        };
+//        class GpuServiceImpl;
 
         struct ThreadInfo
         {
@@ -41,9 +36,38 @@ namespace android
             int         Id;
         };
 
+        enum class DeviceState
+        {
+            Alive = 1,
+            Dead
+        };
+
+        struct DeviceInfo
+        {
+            std::string Vendor; // manufacturer
+            std::string Model;
+            std::string Serial;
+            std::string Version; // Os Version
+            DeviceState State;
+        };
+
+        class ANDROPROF_API ProfilerService
+        {
+        public:
+            explicit ProfilerService(PerfDClientImpl* pd);
+            ~ProfilerService();
+
+            void GetDevices(std::vector<DeviceInfo>& devices);
+            void GetVersion(std::string& version);
+
+        private:
+            std::unique_ptr<ProfilerServiceImpl> d;
+        };
+
         class ANDROPROF_API CpuService
         {
         public:
+            explicit CpuService(PerfDClientImpl* pd);
             ~CpuService();
 
             //void GetData();
@@ -58,34 +82,29 @@ namespace android
             void CheckAppProfilingState();*/
 
         private:
-            explicit CpuService(PerfDClientImpl* pd);
             
-            CpuServiceImpl* d;
+            std::unique_ptr<CpuServiceImpl> d;
         };
 
         class ANDROPROF_API MemoryService
         {
         public:
+            explicit MemoryService(PerfDClientImpl* pd);
             ~MemoryService();
 
         private:
-            explicit MemoryService(PerfDClientImpl* pd);
-
-        private:
-            MemoryServiceImpl* d;
+            std::unique_ptr<MemoryServiceImpl> d;
         };
 
 
         class ANDROPROF_API GpuService
         {
         public:
+            explicit GpuService(PerfDClientImpl* pd);
             ~GpuService();
 
         private:
-            explicit GpuService(PerfDClientImpl* pd);
-
-        private:
-            GpuServiceImpl * d;
+//            std::unique_ptr<GpuServiceImpl> d;
         };
 
         class ANDROPROF_API PerfDClient
@@ -94,10 +113,10 @@ namespace android
             explicit PerfDClient(const char* ServerAddress);
             ~PerfDClient();
 
-            CpuService*     GetCpuService();
-            MemoryService*  GetMemoryService();
+            std::shared_ptr<ProfilerService>    GetProfilerService();
+            std::shared_ptr<CpuService>         GetCpuService();
         private:
-            PerfDClientImpl* d;
+            std::unique_ptr<PerfDClientImpl> d;
         };
     }
 }

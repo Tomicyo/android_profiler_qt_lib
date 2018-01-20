@@ -6,65 +6,25 @@
 #include <grpc++/create_channel.h>
 #include <grpc++/security/credentials.h>
 #include "profiler_service.grpc.pb.h"
-/*
-namespace profiler
-{
-    class ProfilerService : public proto::ProfilerService::Service 
-    {
-    public:
-        ProfilerService();
-        ~ProfilerService();
-
-        grpc::Status GetCurrentTime(grpc::ServerContext* context,
-            const profiler::proto::TimeRequest* request,
-            profiler::proto::TimeResponse* response) override;
-
-        grpc::Status GetVersion(grpc::ServerContext* context,
-            const profiler::proto::VersionRequest* request,
-            profiler::proto::VersionResponse* response) override;
-
-        grpc::Status GetBytes(grpc::ServerContext* context,
-            const profiler::proto::BytesRequest* request,
-            profiler::proto::BytesResponse* response) override;
-
-        grpc::Status GetAgentStatus(
-            grpc::ServerContext* context,
-            const profiler::proto::AgentStatusRequest* request,
-            profiler::proto::AgentStatusResponse* response) override;
-
-        grpc::Status GetDevices(
-            grpc::ServerContext* context,
-            const profiler::proto::GetDevicesRequest* request,
-            profiler::proto::GetDevicesResponse* response) override;
-
-        grpc::Status AttachAgent(
-            grpc::ServerContext* context,
-            const profiler::proto::AgentAttachRequest* request,
-            profiler::proto::AgentAttachResponse* response) override;
-    };
-}
-*/
-
+#include "android_profiler.h"
 namespace android
 {
     namespace profiler
     {
-        using namespace ::profiler::proto;
         using namespace ::grpc;
 
-        class CProfilerService
+        class ANDROPROF_API ProfilerServiceImpl
         {
         public:
 
-            CProfilerService(std::shared_ptr<Channel> channel);
-            ~CProfilerService();
+            ProfilerServiceImpl(std::shared_ptr<Channel> channel);
+            ~ProfilerServiceImpl();
 
-            std::string GetVersion();
-
-            void AttachAgent();
+            void GetVersion(std::string& version);
+            void GetDevices(std::vector<DeviceInfo>& devices);
 
         private:
-            std::unique_ptr< ProfilerService::Stub > m_Stub;
+            std::unique_ptr< ::profiler::proto::ProfilerService::Stub > m_Stub;
         };
     }
 }

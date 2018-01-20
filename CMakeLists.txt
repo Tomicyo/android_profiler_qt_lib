@@ -87,6 +87,8 @@ set(SRV_SRCS
     src/profiler_service.cpp
     src/cpu_service.h
     src/cpu_service.cpp
+    src/gpu_service.h
+    src/gpu_service.cpp
     src/memory_service.h
     src/memory_service.cpp
 )
@@ -117,6 +119,7 @@ target_add_proto(libandroid_profiler PROTOS
 )
 
 target_link_libraries(libandroid_profiler grpc grpc++ libprotobuf)
+target_compile_definitions(libandroid_profiler PRIVATE LIB_BUILD=1 BUILD_SHARED_LIB=1)
 
 add_executable(perfd_connector test/perfd_connect.cpp)
 target_link_libraries(perfd_connector libandroid_profiler)

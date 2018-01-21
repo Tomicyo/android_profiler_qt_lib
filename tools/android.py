@@ -88,7 +88,7 @@ def build(config, abi, stl, sdk_platform, ndk_level, src, artifact_dir):
     
 def build_android_instance(src, abi, stl):
     #src = os.getcwd()
-    artifact_dir = os.path.join(src, 'artifacts', '_'.join([abi,stl]))
+    artifact_dir = os.path.join(src, 'build/artifacts', '_'.join([abi,stl]))
     build('release', abi, stl, 19, 19, src, artifact_dir)
     #build('debug', abi, stl, 23, 23, src, artifact_dir)
     #copy_files_by_ext(os.path.join(src, 'tools'), '.cmake', os.path.join(artifact_dir, 'lib', 'cmake'))

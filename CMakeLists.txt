@@ -20,7 +20,10 @@ else()
 	)
 endif()
 
-include(${K3D_DEPENDS_PATH}/lib/cmake/third_party.cmake)
+if(MSVC)
+    include(${K3D_DEPENDS_PATH}/lib/cmake/third_party.cmake)
+elseif(ANDROID)
+endif()
 include_directories(include)
 
 set(_gRPC_SSL_LIBRARIES ${OPENSSL_LIBRARIES})
@@ -117,7 +120,9 @@ target_add_proto(libandroid_profiler PROTOS
   src/proto/memory.proto
   src/proto/network.proto
 )
-
+if(MSVC)
+add_definitions(/wd4146)
+endif()
 target_link_libraries(libandroid_profiler grpc grpc++ libprotobuf)
 target_compile_definitions(libandroid_profiler PRIVATE LIB_BUILD=1 BUILD_SHARED_LIB=1)
 
